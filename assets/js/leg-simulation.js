@@ -29,7 +29,8 @@
     const driftTelemetry = document.getElementById("sta-drift-value");
     const angleTelemetry = document.getElementById("sta-angle-value");
     const simPlayPauseBtn = document.getElementById("sim-playpause-btn");
-    const simPlayPauseIcon = document.getElementById("sim-playpause-icon");
+    const simPlayIcon = document.getElementById("sim-play-icon");
+    const simPauseIcon = document.getElementById("sim-pause-icon");
 
     function getSceneState(timeMs) {
       const progress = (timeMs % LOOP_DURATION) / LOOP_DURATION;
@@ -618,16 +619,17 @@
         isPaused = !isPaused;
         if (isPaused) {
           pausedAt = performance.now() - startTime;
-          if (simPlayPauseIcon) {
-            simPlayPauseIcon.setAttribute("data-lucide", "play");
+          if (simPlayIcon && simPauseIcon) {
+            simPlayIcon.style.display = "inline-block";
+            simPauseIcon.style.display = "none";
           }
         } else {
           startTime = performance.now() - pausedAt;
-          if (simPlayPauseIcon) {
-            simPlayPauseIcon.setAttribute("data-lucide", "pause");
+          if (simPlayIcon && simPauseIcon) {
+            simPlayIcon.style.display = "none";
+            simPauseIcon.style.display = "inline-block";
           }
         }
-        if (window.lucide) window.lucide.createIcons();
       });
     }
 

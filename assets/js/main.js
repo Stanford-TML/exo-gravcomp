@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.lucide.createIcons();
   }
 
+  initVideoControls();
   initDerivationStepper();
   initResultsChart();
   initBibtexCopy();
@@ -61,7 +62,8 @@ function initDerivationStepper() {
   const prevBtn = document.getElementById('derivation-prev');
   const nextBtn = document.getElementById('derivation-next');
   const playPauseBtn = document.getElementById('derivation-playpause');
-  const playPauseIcon = document.getElementById('playpause-icon');
+  const derivPlayIcon = document.getElementById('derivation-play-icon');
+  const derivPauseIcon = document.getElementById('derivation-pause-icon');
 
   if (!latexContainer) return;
 
@@ -164,9 +166,9 @@ function initDerivationStepper() {
       renderStep(currentStepIdx + 1);
     }, STEP_DURATION);
     isPlaying = true;
-    if (playPauseIcon) {
-      playPauseIcon.setAttribute('data-lucide', 'pause');
-      if (window.lucide) window.lucide.createIcons();
+    if (derivPlayIcon && derivPauseIcon) {
+      derivPlayIcon.style.display = 'none';
+      derivPauseIcon.style.display = 'inline-block';
     }
   }
 
@@ -176,9 +178,9 @@ function initDerivationStepper() {
       autoAdvanceTimer = null;
     }
     isPlaying = false;
-    if (playPauseIcon) {
-      playPauseIcon.setAttribute('data-lucide', 'play');
-      if (window.lucide) window.lucide.createIcons();
+    if (derivPlayIcon && derivPauseIcon) {
+      derivPlayIcon.style.display = 'inline-block';
+      derivPauseIcon.style.display = 'none';
     }
   }
 
@@ -370,4 +372,90 @@ function initBibtexCopy() {
       console.error('Failed to copy BibTeX: ', err);
     }
   });
+}
+
+/* =========================================================================
+   4. Stylized Video Play / Pause Interaction
+   ========================================================================= */
+function initVideoControls() {
+  const video = document.getElementById('hero-video');
+  const videoWrapper = document.getElementById('video-wrapper');
+  const playPauseBtn = document.getElementById('video-playpause-btn');
+  const playIcon = document.getElementById('video-play-icon');
+  const pauseIcon = document.getElementById('video-pause-icon');
+  const playPauseText = document.getElementById('video-playpause-text');
+  
+  const centerIndicator = document.getElementById('video-center-indicator');
+  const centerPlayIcon = document.getElementById('video-center-play-icon');
+  const centerPauseIcon = document.getElementById('video-center-pause-icon');
+
+  if (!video) return;
+
+  function togglePlayPause(e) {
+    if (e) e.stopPropagation();
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  }
+
+  function updateUI(isPlaying) {
+    if (playPauseText) {
+      playPauseText.textContent = isPlaying ? 'Pause' : 'Play';
+    }
+
+    // Toggle button icons
+    if (playIcon && pauseIcon) {
+      if (isPlaying) {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'inline-block';
+      } else {
+        playIcon.style.display = 'inline-block';
+        pauseIcon.style.display = 'none';
+      }
+    }
+
+    // Toggle center indicator icons
+    if (centerPlayIcon && centerPauseIcon) {
+      if (isPlaying) {
+        centerPlayIcon.style.display = 'none';
+        centerPauseIcon.style.display = 'inline-block';
+      } else {
+        centerPlayIcon.style.display = 'inline-block';
+        centerPauseIcon.style.display = 'none';
+      }
+    }
+
+    // Flash center feedback indicator
+    if (centerIndicator) {
+      centerIndicator.classList.remove('opacity-0');
+      centerIndicator.classList.add('opacity-100');
+      setTimeout(() => {
+        centerIndicator.classList.remove('opacity-100');
+        centerIndicator.classList.add('opacity-0');
+      }, 500);
+    }
+  }
+
+  if (videoWrapper) {
+    videoWrapper.addEventListener('click', togglePlayPause);
+  }
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePlayPause();
+    });
+  }
+
+  // Handle native video play/pause events
+  video.addEventListener('play', () => updateUI(true));
+  video.addEventListener('pause', () => updateUI(false));
+
+  // Initialize button icons and text according to video state on load (without flashing center indicator)
+  if (playPauseText) playPauseText.textContent = video.paused ? 'Play' : 'Pause';
+  if (playIcon && pauseIcon) {
+    playIcon.style.display = video.paused ? 'inline-block' : 'none';
+    pauseIcon.style.display = video.paused ? 'none' : 'inline-block';
+  }
 }

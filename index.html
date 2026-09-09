@@ -48,21 +48,26 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="assets/css/style.css" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="assets/favicons/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png" />
+  <link rel="manifest" href="assets/favicons/site.webmanifest" />
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased selection:bg-[#8C1515] selection:text-white">
 
   <!-- Top Sticky Navigation Bar -->
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-[#8C1515] border border-red-200/60">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#8C1515]"></span>
-          CoRL 2026
-        </span>
-        <span class="text-xs font-semibold text-slate-500 hidden sm:inline-block">Stanford University</span>
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <a href="https://tml.stanford.edu" target="_blank" rel="noopener noreferrer" class="flex items-center transition-opacity hover:opacity-90" title="The Movement Lab at Stanford University">
+          <img src="assets/images/logo.png" alt="Stanford TML Logo" class="h-9 sm:h-10 w-auto object-contain" />
+        </a>
       </div>
 
-      <nav class="flex items-center space-x-4 text-xs sm:text-sm font-medium text-slate-600">
+      <nav class="flex items-center space-x-4 sm:space-x-6 text-xs sm:text-sm font-semibold text-slate-600">
         <a href="#abstract" class="hover:text-[#8C1515] transition-colors">Abstract</a>
         <a href="#hardware" class="hover:text-[#8C1515] transition-colors">Hardware</a>
         <a href="#method" class="hover:text-[#8C1515] transition-colors">Method</a>
@@ -89,8 +94,8 @@
 
       <!-- Authors List -->
       <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-sm sm:text-base text-slate-700 font-medium pt-2">
-        <span><strong class="text-slate-900">Jonathan Tseng</strong><sup class="text-[#8C1515] font-semibold">1</sup></span>
-        <span>Six Skov<sup class="text-[#8C1515] font-semibold">2</sup></span>
+        <span>Jonathan Tseng<sup class="text-[#8C1515] font-semibold">1,*</sup></span>
+        <span>Six Skov<sup class="text-[#8C1515] font-semibold">2,*</sup></span>
         <span>Keenon Werling<sup class="text-[#8C1515] font-semibold">1</sup></span>
         <span>Steve Collins<sup class="text-[#8C1515] font-semibold">2</sup></span>
         <span>Scott Delp<sup class="text-[#8C1515] font-semibold">3</sup></span>
@@ -98,13 +103,16 @@
       </div>
 
       <!-- Affiliations -->
-      <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-slate-500">
-        <span><sup class="text-[#8C1515]">1</sup>Department of Computer Science</span>
-        <span>&bull;</span>
-        <span><sup class="text-[#8C1515]">2</sup>Department of Mechanical Engineering</span>
-        <span>&bull;</span>
-        <span><sup class="text-[#8C1515]">3</sup>Department of Bioengineering</span>
-        <div class="w-full text-slate-600 font-medium mt-1">Stanford University</div>
+      <div class="flex flex-col items-center text-xs sm:text-sm text-slate-500 space-y-1">
+        <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1">
+          <span><sup class="text-[#8C1515]">1</sup>Department of Computer Science</span>
+          <span>&bull;</span>
+          <span><sup class="text-[#8C1515]">2</sup>Department of Mechanical Engineering</span>
+          <span>&bull;</span>
+          <span><sup class="text-[#8C1515]">3</sup>Department of Bioengineering</span>
+        </div>
+        <div class="text-slate-600 font-medium">Stanford University</div>
+        <div class="text-xs text-slate-500 italic pt-0.5"><sup>*</sup>Denotes equal contribution</div>
       </div>
 
       <!-- Action Buttons -->
@@ -131,41 +139,9 @@
         &ldquo;Just learn it.&rdquo;
       </blockquote>
       <div class="text-xs text-amber-900 font-medium mt-1">
-        &mdash; <strong>Jonathan Tseng</strong>, when asked how to solve hyperstatic closed-loop human-exoskeleton kinematics
+        &mdash; Jonathan Tseng, when asked how to solve hyperstatic closed-loop human-exoskeleton kinematics
       </div>
     </div>
-
-    <!-- Teaser / Hero Media Section (Hardware Video & Teaser) -->
-    <section class="space-y-4">
-      <div class="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-md">
-        
-        <!-- Video Container -->
-        <div class="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center rounded-t-2xl overflow-hidden">
-          <video 
-            id="hero-video" 
-            src="exo_video.mp4?v=2" 
-            class="w-full h-full object-cover scale-[1.14] rounded-t-xl"
-            autoplay 
-            muted 
-            loop 
-            playsinline 
-            controls
-          ></video>
-        </div>
-
-        <!-- Caption -->
-        <div class="p-4 sm:p-5 bg-white border-t border-slate-100 text-xs sm:text-sm text-slate-600 leading-relaxed flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <strong class="text-slate-800 font-semibold">Figure 1 &bull; Hardware Deployment:</strong> 
-            Untethered high-force knee exoskeleton rendering up to 100 Nm of assistive torque via linear winch cable transmission during dynamic mobility and yielding tasks.
-          </div>
-          <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 whitespace-nowrap bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
-            <i data-lucide="video" class="w-3.5 h-3.5 text-[#8C1515]"></i>
-            Custom Winch Actuator
-          </span>
-        </div>
-      </div>
-    </section>
 
     <!-- Abstract Section -->
     <section id="abstract" class="space-y-4 max-w-3xl mx-auto">
@@ -178,18 +154,88 @@
       </p>
     </section>
 
-    <!-- Hardware & Biomechanics Section: The Problem, Animated -->
-    <section id="hardware" class="space-y-6">
+    <!-- Hardware & Biomechanics Section: High-Force Platform & Biomechanical Limits -->
+    <section id="hardware" class="space-y-8">
       <div class="text-center space-y-2">
         <div class="text-xs uppercase tracking-wider font-bold text-[#8C1515]">Physical Platform &amp; Biomechanics</div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Custom Exoskeleton &amp; Moving Center of Rotation (STA)</h2>
-        <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto">
-          High-force actuation induces viscoelastic soft-tissue compression, causing the biological instantaneous center of rotation to drift up to 18 mm relative to the rigid exoskeleton hinge.
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Custom High-Force Exoskeleton</h2>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          We use a custom untethered knee exoskeleton capable of emitting &gt; 100 Nm (roughly equivalent to the engine of a 
+          <span class="relative inline-block group cursor-help font-semibold text-slate-800 border-b border-dashed border-red-700/60 hover:text-[#8C1515]">
+            Toyota Yaris
+            <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-60 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out z-50 bg-slate-900 text-white rounded-xl p-3 shadow-2xl border border-slate-700 text-xs text-left">
+              <img src="assets/images/yaris.jpg" alt="Toyota Yaris" class="w-full h-32 object-cover rounded-lg mb-2 border border-slate-800 shadow-sm" />
+              <span class="font-bold text-white block text-xs">Toyota Yaris (~100–120 Nm)</span>
+              <span class="text-[11px] text-slate-300 block leading-tight mt-1">A compact automobile engine outputting ~100 Nm of peak torque &mdash; matching the torque delivered by our dual knee actuators.</span>
+            </span>
+          </span>) per leg.
         </p>
       </div>
 
-      <!-- Interactive Biomechanical Canvas: The Problem, Animated (Full Width) -->
-      <div class="max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md p-4 sm:p-6 space-y-4">
+      <!-- Hardware Video -->
+      <div class="relative max-w-4xl mx-auto rounded-2xl border border-slate-200 bg-white shadow-md">
+        <div id="video-wrapper" class="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center rounded-t-2xl overflow-hidden cursor-pointer group/video">
+          <video 
+            id="hero-video" 
+            src="exo_video.mp4?v=2" 
+            class="w-full h-full object-cover scale-[1.14] rounded-t-xl"
+            autoplay 
+            muted 
+            loop 
+            playsinline 
+          ></video>
+
+          <!-- Floating Play/Pause Toggle Badge -->
+          <button id="video-playpause-btn" aria-label="Play or pause video" class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white text-xs font-semibold backdrop-blur-md border border-white/20 shadow-lg transition-all duration-200 hover:scale-105 active:scale-95">
+            <svg id="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-white" style="display: none;">
+              <polygon points="6 3 20 12 6 21 6 3"></polygon>
+            </svg>
+            <svg id="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-white" style="display: inline-block;">
+              <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
+              <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
+            </svg>
+            <span id="video-playpause-text" class="text-[11px] uppercase tracking-wider font-bold">Pause</span>
+          </button>
+
+          <!-- Center Flash Feedback Indicator -->
+          <div id="video-center-indicator" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300 z-10">
+            <div class="p-4 rounded-full bg-slate-900/70 text-white backdrop-blur-md border border-white/30 shadow-2xl scale-110">
+              <svg id="video-center-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-white" style="display: none;">
+                <polygon points="6 3 20 12 6 21 6 3"></polygon>
+              </svg>
+              <svg id="video-center-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-white" style="display: inline-block;">
+                <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
+                <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hardware Description Caption -->
+        <div class="p-4 sm:p-5 bg-white border-t border-slate-100 rounded-b-2xl text-xs sm:text-sm text-slate-600 leading-relaxed">
+          To generate high torques in a small frame, the exoskeleton uses 
+          <span class="relative inline-block group cursor-help font-semibold text-slate-800 border-b border-dashed border-red-700/60 hover:text-[#8C1515]">
+            UHMWPE
+            <span class="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-64 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out z-50 bg-slate-900 text-white rounded-xl p-3 shadow-2xl border border-slate-700 text-xs text-left">
+              <span class="font-bold text-red-400 block mb-1">UHMWPE Cable</span>
+              <span class="text-[11px] text-slate-300 block leading-relaxed"><strong class="text-white">Ultra-High-Molecular-Weight Polyethylene:</strong> An ultra-lightweight thermoplastic fiber offering ~15&times; the strength-to-weight ratio of steel, used in high-load winch cable transmissions.</span>
+            </span>
+          </span> 
+          ropes in a linear winch cable transmission system.
+        </div>
+      </div>
+
+      <!-- Biomechanical Challenge: Soft Tissue Artifact & Axis Drift -->
+      <div class="space-y-4 pt-2">
+        <div class="text-center space-y-2">
+          <h3 class="text-xl sm:text-2xl font-bold text-slate-900">Moving Center of Rotation (Soft Tissue Artifact)</h3>
+          <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto">
+            High-force actuation induces viscoelastic soft-tissue compression, causing the biological instantaneous center of rotation to drift up to 18 mm relative to the rigid exoskeleton hinge.
+          </p>
+        </div>
+
+        <!-- Interactive Biomechanical Canvas: The Problem, Animated (Full Width) -->
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md p-4 sm:p-6 space-y-4">
         
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div class="flex items-center gap-2">
@@ -200,7 +246,13 @@
           <!-- Animation Controls -->
           <div class="flex items-center gap-2">
             <button id="sim-playpause-btn" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="Play / Pause Animation">
-              <i id="sim-playpause-icon" data-lucide="pause" class="w-4 h-4"></i>
+              <svg id="sim-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-slate-700" style="display: none;">
+                <polygon points="6 3 20 12 6 21 6 3"></polygon>
+              </svg>
+              <svg id="sim-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-slate-700" style="display: inline-block;">
+                <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
+                <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
+              </svg>
             </button>
           </div>
         </div>
@@ -224,7 +276,7 @@
 
         <!-- Caption -->
         <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-          <strong class="text-slate-800">The device is attached with only straps, so true rigid coupling is not possible.</strong> High actuation loads induce viscoelastic soft-tissue compression. In the animation above, red vectors denote normal interface compression, while the blue dot marks the shifting anatomical knee axis drifting away from the black exoskeleton pivot, invalidating rigid-body kinematic assumptions.
+          <strong class="text-slate-800">The exo is attached with only soft straps, so true rigid coupling is not possible.</strong> High actuation loads induce viscoelastic soft-tissue compression. In the animation above, red vectors denote normal interface compression, while the blue dot marks the shifting anatomical knee axis drifting away from the black exoskeleton pivot, invalidating rigid-body kinematic assumptions.
         </p>
       </div>
     </section>
@@ -253,7 +305,13 @@
               <i data-lucide="chevron-left" class="w-4 h-4"></i>
             </button>
             <button id="derivation-playpause" aria-label="Toggle auto advance" class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition">
-              <i id="playpause-icon" data-lucide="pause" class="w-4 h-4"></i>
+              <svg id="derivation-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-slate-700" style="display: none;">
+                <polygon points="6 3 20 12 6 21 6 3"></polygon>
+              </svg>
+              <svg id="derivation-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-slate-700" style="display: inline-block;">
+                <rect x="6" y="4" width="4" height="16" rx="1.5"></rect>
+                <rect x="14" y="4" width="4" height="16" rx="1.5"></rect>
+              </svg>
             </button>
             <button id="derivation-next" aria-label="Next step" class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition">
               <i data-lucide="chevron-right" class="w-4 h-4"></i>
@@ -284,7 +342,6 @@
       <div class="rounded-2xl bg-white border border-slate-200 p-5 sm:p-7 shadow-sm space-y-5">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400">End-to-End Data Harvesting &amp; Calibration Pipeline</h4>
-          <span class="text-xs font-semibold text-slate-500 hidden sm:inline-block">Amass Seeding &rarr; 60s Personalization</span>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
