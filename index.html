@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empirical Learning of Effective Assistance Torques in Wearable Exoskeletons | CoRL 2026</title>
+  <meta name="description" content="A velocity-constrained data collection protocol for empirical learning of effective assistance torques in coupled human-exoskeleton systems. Stanford University." />
+  
+  <!-- Open Graph / Meta Tags -->
+  <meta property="og:title" content="Empirical Learning of Effective Assistance Torques in Wearable Exoskeletons" />
+  <meta property="og:description" content="Bypassing analytical biomechanical modeling: powered exoskeletons as active measurement devices." />
+  <meta property="og:type" content="website" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            stanford: {
+              cardinal: '#8C1515',
+              dark: '#5A0000',
+              accent: '#B83A4B',
+              cool: '#4D4F53',
+              light: '#F4F4F4'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- KaTeX for LaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+
+  <!-- Chart.js for Interactive Publication Figures -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased selection:bg-[#8C1515] selection:text-white">
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-100 text-[#8C1515] border border-red-200/60">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#8C1515]"></span>
+          CoRL 2026
+        </span>
+        <span class="text-xs font-semibold text-slate-500 hidden sm:inline-block">Stanford University</span>
+      </div>
+
+      <nav class="flex items-center space-x-4 text-xs sm:text-sm font-medium text-slate-600">
+        <a href="#abstract" class="hover:text-[#8C1515] transition-colors">Abstract</a>
+        <a href="#hardware" class="hover:text-[#8C1515] transition-colors">Hardware</a>
+        <a href="#method" class="hover:text-[#8C1515] transition-colors">Method</a>
+        <a href="#results" class="hover:text-[#8C1515] transition-colors">Results</a>
+        <a href="#bibtex" class="hover:text-[#8C1515] transition-colors">BibTeX</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-16">
+
+    <!-- Hero / Title Section -->
+    <section class="text-center space-y-6">
+      
+      <!-- Conference Badge -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs sm:text-sm font-semibold shadow-sm">
+        <span>Conference on Robot Learning (CoRL) 2026</span>
+      </div>
+
+      <!-- Main Paper Title -->
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight max-w-4xl mx-auto">
+        Empirical Learning of Effective Assistance Torques in Wearable Exoskeletons via Velocity-Constrained Data Collection
+      </h1>
+
+      <!-- Authors List -->
+      <div class="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-sm sm:text-base text-slate-700 font-medium pt-2">
+        <span><strong class="text-slate-900">Jonathan Tseng</strong><sup class="text-[#8C1515] font-semibold">1</sup></span>
+        <span>Six Skov<sup class="text-[#8C1515] font-semibold">2</sup></span>
+        <span>Keenon Werling<sup class="text-[#8C1515] font-semibold">1</sup></span>
+        <span>Steve Collins<sup class="text-[#8C1515] font-semibold">2</sup></span>
+        <span>Scott Delp<sup class="text-[#8C1515] font-semibold">3</sup></span>
+        <span>C. Karen Liu<sup class="text-[#8C1515] font-semibold">1</sup></span>
+      </div>
+
+      <!-- Affiliations -->
+      <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-slate-500">
+        <span><sup class="text-[#8C1515]">1</sup>Department of Computer Science</span>
+        <span>&bull;</span>
+        <span><sup class="text-[#8C1515]">2</sup>Department of Mechanical Engineering</span>
+        <span>&bull;</span>
+        <span><sup class="text-[#8C1515]">3</sup>Department of Bioengineering</span>
+        <div class="w-full text-slate-600 font-medium mt-1">Stanford University</div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap justify-center items-center gap-3 pt-4">
+        <!-- arXiv -->
+        <a href="#" class="btn-action inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold shadow-sm transition-all">
+          <i data-lucide="file-text" class="w-4 h-4 text-red-400"></i>
+          <span>arXiv</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Coming Soon</span>
+        </a>
+
+        <!-- BibTeX Quick Link -->
+        <a href="#bibtex" class="btn-action inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-800 text-sm font-semibold border border-slate-300 shadow-sm transition-all">
+          <i data-lucide="quote" class="w-4 h-4 text-[#8C1515]"></i>
+          <span>BibTeX</span>
+        </a>
+      </div>
+
+    </section>
+
+    <!-- Humorous Quote Block -->
+    <div class="max-w-2xl mx-auto px-6 py-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-center">
+      <blockquote class="font-serif-quote italic text-lg sm:text-xl text-slate-800">
+        &ldquo;Just learn it.&rdquo;
+      </blockquote>
+      <div class="text-xs text-amber-900 font-medium mt-1">
+        &mdash; <strong>Jonathan Tseng</strong>, when asked how to solve hyperstatic closed-loop human-exoskeleton kinematics
+      </div>
+    </div>
+
+    <!-- Teaser / Hero Media Section (Hardware Video & Teaser) -->
+    <section class="space-y-4">
+      <div class="relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-md">
+        
+        <!-- Video Container -->
+        <div class="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center rounded-t-2xl overflow-hidden">
+          <video 
+            id="hero-video" 
+            src="exo_video.mp4?v=2" 
+            class="w-full h-full object-cover scale-[1.14] rounded-t-xl"
+            autoplay 
+            muted 
+            loop 
+            playsinline 
+            controls
+          ></video>
+        </div>
+
+        <!-- Caption -->
+        <div class="p-4 sm:p-5 bg-white border-t border-slate-100 text-xs sm:text-sm text-slate-600 leading-relaxed flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <strong class="text-slate-800 font-semibold">Figure 1 &bull; Hardware Deployment:</strong> 
+            Untethered high-force knee exoskeleton rendering up to 100 Nm of assistive torque via linear winch cable transmission during dynamic mobility and yielding tasks.
+          </div>
+          <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 whitespace-nowrap bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+            <i data-lucide="video" class="w-3.5 h-3.5 text-[#8C1515]"></i>
+            Custom Winch Actuator
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Abstract Section -->
+    <section id="abstract" class="space-y-4 max-w-3xl mx-auto">
+      <h2 class="text-2xl font-bold text-slate-900 text-center flex items-center justify-center gap-2">
+        <i data-lucide="book-open" class="w-5 h-5 text-[#8C1515]"></i>
+        Abstract
+      </h2>
+      <p class="text-slate-700 text-sm sm:text-base leading-relaxed text-justify">
+        While traditional modeling effectively supports a robot's intrinsic mass, providing active anti-gravity assistance for the combined mass of a coupled human-exoskeleton system remains notoriously difficult. Challenges such as non-rigid interfacing, unmodeled biological torques, and the static indeterminacy of closed kinematic loops severely limit the efficacy of analytical modeling. In this paper, we present a novel, efficient data collection paradigm that bypasses these complexities to directly learn effective feedforward assistance torques. By implementing a velocity-limited admittance controller, we establish a kinematic constraint that actively suppresses inertial dynamics, Coriolis effects, and voluntary human reflexes. This generates a clean dataset isolating configuration-dependent assistive requirements. We use this data to produce an empirical model that successfully generalizes gravity-compensation scaling to novel subjects. Our model drives absolute torque prediction errors below 10% and significantly outperforms state-of-the-art analytical baselines derived from sparse wearable sensors. Finally, our few-shot calibration protocol extracts user-specific assistive profiles, allowing the personalized model to scale to high-acceleration dynamic tasks and providing a robust foundation for high-force assistance.
+      </p>
+    </section>
+
+    <!-- Hardware & Biomechanics Section: The Problem, Animated -->
+    <section id="hardware" class="space-y-6">
+      <div class="text-center space-y-2">
+        <div class="text-xs uppercase tracking-wider font-bold text-[#8C1515]">Physical Platform &amp; Biomechanics</div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Custom Exoskeleton &amp; Moving Center of Rotation (STA)</h2>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto">
+          High-force actuation induces viscoelastic soft-tissue compression, causing the biological instantaneous center of rotation to drift up to 18 mm relative to the rigid exoskeleton hinge.
+        </p>
+      </div>
+
+      <!-- Interactive Biomechanical Canvas: The Problem, Animated (Full Width) -->
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-md p-4 sm:p-6 space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-600 pulse-dot"></span>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">The problem, animated</h3>
+          </div>
+
+          <!-- Animation Controls -->
+          <div class="flex items-center gap-2">
+            <button id="sim-playpause-btn" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="Play / Pause Animation">
+              <i id="sim-playpause-icon" data-lucide="pause" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- HTML5 Canvas Rendering Leg Admittance & STA Drift -->
+        <div class="relative w-full h-[280px] sm:h-[320px] bg-white rounded-xl border border-slate-100 overflow-hidden flex items-center justify-center">
+          <canvas id="legSimCanvas" width="900" height="350" class="w-full h-full object-contain"></canvas>
+        </div>
+
+        <!-- Live Telemetry Badges -->
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="py-2 px-3 rounded-lg bg-red-50 border border-red-100">
+            <div class="text-[10px] uppercase font-bold text-red-800">Instantaneous Axis Drift</div>
+            <div id="sta-drift-value" class="text-sm sm:text-base font-extrabold font-mono text-[#8C1515]">~15.4 mm</div>
+          </div>
+          <div class="py-2 px-3 rounded-lg bg-slate-50 border border-slate-200">
+            <div class="text-[10px] uppercase font-bold text-slate-600">Knee Flexion</div>
+            <div id="sta-angle-value" class="text-sm sm:text-base font-extrabold font-mono text-slate-800">85°</div>
+          </div>
+        </div>
+
+        <!-- Caption -->
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+          <strong class="text-slate-800">The device is attached with only straps, so true rigid coupling is not possible.</strong> High actuation loads induce viscoelastic soft-tissue compression. In the animation above, red vectors denote normal interface compression, while the blue dot marks the shifting anatomical knee axis drifting away from the black exoskeleton pivot, invalidating rigid-body kinematic assumptions.
+        </p>
+      </div>
+    </section>
+
+    <!-- Method: Interactive Derivation Stepper -->
+    <section id="method" class="space-y-6">
+      <div class="text-center space-y-2">
+        <div class="text-xs uppercase tracking-wider font-bold text-[#8C1515]">Derivation &amp; Theory</div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Velocity-Constrained Admittance Protocol</h2>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto">
+          How enforcing a strict kinematic ceiling suppresses inertial dynamics and voluntary reflexes to isolate pure assistance requirements.
+        </p>
+      </div>
+
+      <!-- Interactive Stepper Card -->
+      <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-sm space-y-6 max-w-4xl mx-auto">
+        
+        <!-- Controls: Pills + Play/Pause/Arrows -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+          <div id="derivation-pills" class="flex flex-wrap gap-2">
+            <!-- Rendered dynamically by JS -->
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button id="derivation-prev" aria-label="Previous step" class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <button id="derivation-playpause" aria-label="Toggle auto advance" class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition">
+              <i id="playpause-icon" data-lucide="pause" class="w-4 h-4"></i>
+            </button>
+            <button id="derivation-next" aria-label="Next step" class="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 transition">
+              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Animated Derivation Content -->
+        <div class="space-y-4 min-h-[170px] flex flex-col justify-center">
+          <h3 id="derivation-title" class="text-base sm:text-lg font-bold text-slate-900">
+            Coupled Human-Exoskeleton Dynamics
+          </h3>
+
+          <div class="p-5 rounded-xl bg-slate-900 text-white shadow-inner overflow-x-auto text-center">
+            <div id="derivation-latex" class="text-sm sm:text-base font-mono">
+              <!-- Rendered via KaTeX -->
+            </div>
+          </div>
+
+          <p id="derivation-caption" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <!-- Dynamic step explanation -->
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Pipeline Overview: 4-Step Responsive Cards with Clean Line Wrapping -->
+      <div class="rounded-2xl bg-white border border-slate-200 p-5 sm:p-7 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h4 class="text-xs uppercase font-bold tracking-wider text-slate-400">End-to-End Data Harvesting &amp; Calibration Pipeline</h4>
+          <span class="text-xs font-semibold text-slate-500 hidden sm:inline-block">Amass Seeding &rarr; 60s Personalization</span>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Step 1 -->
+          <div class="flex flex-col justify-between p-4 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-slate-300 transition shadow-sm space-y-3">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-red-100 text-[#8C1515] font-mono text-xs font-bold border border-red-200">1</span>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase">AMASS Bank</span>
+              </div>
+              <h5 class="text-sm font-bold text-slate-900">Pose Seeding</h5>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Farthest-point sampling extracts 100 diverse initial postures across the kinematic state space.
+              </p>
+            </div>
+            <div class="pt-2 border-t border-slate-200/60">
+              <span class="inline-block w-full text-center px-2 py-1 text-[11px] font-mono font-medium rounded bg-white border border-slate-200 text-slate-700">
+                100 Target Poses
+              </span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex flex-col justify-between p-4 rounded-xl bg-red-50/50 border border-red-200 hover:border-red-300 transition shadow-sm space-y-3">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#8C1515] text-white font-mono text-xs font-bold">2</span>
+                <span class="text-[11px] font-semibold text-red-700 uppercase">Admittance</span>
+              </div>
+              <h5 class="text-sm font-bold text-slate-900">Passive Yielding</h5>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Motor clamps descent to 0.125 rad/s. Inertial transients and involuntary stretch reflexes vanish.
+              </p>
+            </div>
+            <div class="pt-2 border-t border-red-200/60">
+              <span class="inline-block w-full text-center px-2 py-1 text-[11px] font-mono font-bold rounded bg-white border border-red-200 text-[#8C1515]">
+                q̇ ≤ 0.125 rad/s
+              </span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex flex-col justify-between p-4 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-slate-300 transition shadow-sm space-y-3">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-amber-100 text-amber-800 font-mono text-xs font-bold border border-amber-200">3</span>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase">Sensor Loop</span>
+              </div>
+              <h5 class="text-sm font-bold text-slate-900">Data Harvesting</h5>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Continuous trajectory records actual tension required to hold user without biological noise.
+              </p>
+            </div>
+            <div class="pt-2 border-t border-slate-200/60">
+              <span class="inline-block w-full text-center px-2 py-1 text-[11px] font-mono font-medium rounded bg-white border border-slate-200 text-amber-800">
+                F_winch ~ (g - τ_p)/R
+              </span>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="flex flex-col justify-between p-4 rounded-xl bg-slate-50/90 border border-slate-200 hover:border-slate-300 transition shadow-sm space-y-3">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 font-mono text-xs font-bold border border-emerald-200">4</span>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase">Real-Time</span>
+              </div>
+              <h5 class="text-sm font-bold text-slate-900">MLP &amp; Calibration</h5>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                16D state maps to 32 torque bins. 3 slow yielding squats personalize user-specific tissue elasticity.
+              </p>
+            </div>
+            <div class="pt-2 border-t border-slate-200/60">
+              <span class="inline-block w-full text-center px-2 py-1 text-[11px] font-mono font-medium rounded bg-white border border-slate-200 text-emerald-800">
+                3 Squats = Personalized
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Section: Pithy & Punchy -->
+    <section id="results" class="space-y-6">
+      <div class="text-center space-y-2">
+        <div class="text-xs uppercase tracking-wider font-bold text-[#8C1515]">Empirical Validation</div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">Generalization to Novel Subjects</h2>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto">
+          Trained strictly on Subject A; zero-shot evaluation on 5 completely naive novel human subjects (B&ndash;F).
+        </p>
+      </div>
+
+      <!-- Main Result Chart Card -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900">
+              Torque Prediction Error Across Poses (Normalized by Bodyweight)
+            </h3>
+            <p class="text-xs text-slate-500">
+              Comparing Mean Absolute Error (MAE in Nm/kg) against Force Plate + MoCap Bottom-Up Ground Truth.
+            </p>
+          </div>
+          
+          <div class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span>Pearson Correlation:</span>
+            <span class="font-bold font-mono">r = 0.87 (Ours)</span>
+            <span class="text-slate-400 font-normal">vs 0.64 (MuJoCo)</span>
+          </div>
+        </div>
+
+        <!-- Interactive Chart.js Canvas -->
+        <div class="relative w-full h-72 sm:h-80">
+          <canvas id="mainResultsChart"></canvas>
+        </div>
+
+        <!-- Pithy Key Result Callouts -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          
+          <!-- Callout 1 -->
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-xs font-bold text-[#8C1515] uppercase">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+              Hyperstatic Stability
+            </div>
+            <div class="text-lg font-extrabold text-slate-900 mt-1">4&times; Lower Error in Lunges</div>
+            <p class="text-xs text-slate-600 mt-1">
+              Analytical baselines fail in multi-contact asymmetric lunges (<span class="font-mono text-slate-800">0.68 Nm/kg</span>), while our model remains highly stable (<span class="font-mono text-[#8C1515] font-bold">0.17 Nm/kg</span>).
+            </p>
+          </div>
+
+          <!-- Callout 2 -->
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-xs font-bold text-emerald-700 uppercase">
+              <i data-lucide="activity" class="w-4 h-4"></i>
+              Dynamic Fluidity
+            </div>
+            <div class="text-lg font-extrabold text-slate-900 mt-1">Smooth, Low-Jerk Motion</div>
+            <p class="text-xs text-slate-600 mt-1">
+              Maintains full human range of motion (&gt;100&deg;) without the high jerk and restrictive resistance seen in virtual springs.
+            </p>
+          </div>
+
+          <!-- Callout 3 -->
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div class="flex items-center gap-2 text-xs font-bold text-amber-700 uppercase">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              High-Load Stress Test
+            </div>
+            <div class="text-lg font-extrabold text-slate-900 mt-1">&gt; 50% Heavy Squat Boost</div>
+            <p class="text-xs text-slate-600 mt-1">
+              Untrained subject successfully completed heavy barbell squats with &gt;50% more weight than their unassisted maximum.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- BibTeX Citation Section -->
+    <section id="bibtex" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="file-code" class="w-5 h-5 text-[#8C1515]"></i>
+          BibTeX Citation
+        </h2>
+        
+        <button id="copy-bibtex-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-200 transition">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Copy BibTeX</span>
+        </button>
+      </div>
+
+      <div class="relative">
+        <pre class="bg-slate-900 text-slate-200 p-5 rounded-xl text-xs sm:text-sm font-mono overflow-x-auto leading-relaxed border border-slate-800"><code id="bibtex-code">@inproceedings{tseng2026empirical,
+  title={Empirical Learning of Effective Assistance Torques in Wearable Exoskeletons via Velocity-Constrained Data Collection},
+  author={Tseng, Jonathan and Skov, Six and Werling, Keenon and Collins, Steve and Delp, Scott and Liu, C. Karen},
+  booktitle={Conference on Robot Learning (CoRL)},
+  year={2026}
+}</code></pre>
+        
+        <!-- Toast Notification -->
+        <div id="copy-toast" class="opacity-0 pointer-events-none transition-opacity duration-200 absolute top-3 right-3 bg-emerald-700 text-white text-xs font-medium px-3 py-1.5 rounded-md shadow-lg flex items-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          Copied to clipboard!
+        </div>
+      </div>
+    </section>
+
+    <!-- Acknowledgments & Lab Affiliations -->
+    <section class="border-t border-slate-200 pt-8 text-xs text-slate-500 space-y-2 text-center sm:text-left">
+      <p class="font-semibold text-slate-700">Acknowledgments &amp; Affiliations</p>
+      <p>
+        This research was conducted at Stanford University across <strong>The Movement Lab (TML)</strong> and the <strong>Human Performance Lab (HPL)</strong>. Testing was conducted under Stanford Institutional Review Board (IRB ID 17282).
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
+    <div class="max-w-5xl mx-auto px-4">
+      Empirical Assistance Torques in Wearable Exoskeletons &bull; CoRL 2026
+    </div>
+  </footer>
+
+  <!-- Main JS & Leg Animation -->
+  <script src="assets/js/main.js?v=3"></script>
+  <script src="assets/js/leg-simulation.js?v=6"></script>
+</body>
+</html>

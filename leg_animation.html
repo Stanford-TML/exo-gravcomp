@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leg Admittance Animation Export</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+        }
+        canvas {
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #ccc;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #2b914a;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #1e6b35;
+        }
+        button:disabled {
+            background-color: #777;
+            cursor: not-allowed;
+            animation: none;
+        }
+        button.recording {
+            background-color: #d93838;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+    </style>
+    <!-- Include gif.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+</head>
+<body>
+
+    <canvas id="legCanvas" width="800" height="600"></canvas>
+
+    <div class="controls">
+        <button id="recordBtn" disabled>Loading recorder...</button>
+    </div>
+
+<script>
+    const canvas = document.getElementById("legCanvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+    const offCanvas = document.createElement("canvas");
+    offCanvas.width = canvas.width;
+    offCanvas.height = canvas.height;
+    const offCtx = offCanvas.getContext("2d", { willReadFrequently: true });
+
+    // Dimensions
+    const thighLength = 300;
+    const shinLength = 220;
+    const shankTubeHeight = 120;
+    
+    const baseRotationDeg = -40; 
+    
+    // Animation constants
+    const startTime = performance.now();
+    const LOOP_DURATION = 3000; // Exact length of one full cycle in milliseconds
+    const FPS = 30; // Desired framerate for the exported GIF
+    
+    let gifWorkerUrl = null;
+    const recordBtn = document.getElementById("recordBtn");
+    
+    fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js')
+        .then(response => response.text())
+        .then(scriptText => {
+            const blob = new Blob([scriptText], { type: 'application/javascript' });
+            gifWorkerUrl = URL.createObjectURL(blob);
+            recordBtn.disabled = false;
+            recordBtn.textContent = "Export Looping GIF";
+        })
+        .catch(err => {
+            console.error(err);
+            recordBtn.textContent = "Error loading GIF worker";
+        });
+
+    // Extract state logic to easily scrub to any point in the cycle
+    function getSceneState(timeMs) {
+        const progress = (timeMs % LOOP_DURATION) / LOOP_DURATION;
+        const angleOffset = Math.sin(progress * Math.PI * 2);
+        
+        const kneeAngle = 85 + 15 * angleOffset; 
+        
+        // Deformation phase: Tension peaks when the leg extends
+        const deformPhase = -angleOffset; 
+        const deform = deformPhase > 0 ? deformPhase : 0; 
+        
+        return { kneeAngle, deform };
+    }
+
+    // --- MAIN ANIMATION LOOP ---
+    function animate() {
+        const timeMs = performance.now() - startTime;
+        const { kneeAngle, deform } = getSceneState(timeMs);
+
+        drawScene(ctx, kneeAngle, deform);
+        requestAnimationFrame(animate);
+    }
+
+    function drawScene(currentCtx, kneeAngleDegrees, deform) {
+        if (currentCtx === offCtx) {
+            currentCtx.fillStyle = '#FEFEFE';
+            currentCtx.fillRect(0, 0, currentCtx.canvas.width, currentCtx.canvas.height);
+        } else {
+            currentCtx.clearRect(0, 0, currentCtx.canvas.width, currentCtx.canvas.height);
+        }
+        
+        const pivotX = currentCtx.canvas.width / 2 + 50;
+        const pivotY = currentCtx.canvas.height / 2 + 50;
+        const baseAngleRad = baseRotationDeg * Math.PI / 180;
+        const kneeAngleRad = kneeAngleDegrees * Math.PI / 180;
+
+        // The exoskeleton thigh tube visibly flexes forward slightly under tension
+        const exoThighAngleRad = deform * 0.08;
+
+        currentCtx.save();
+        currentCtx.translate(pivotX, pivotY);
+        currentCtx.rotate(baseAngleRad);
+
+        drawLeg(currentCtx, thighLength, shinLength, kneeAngleRad, deform);
+        drawTubes(currentCtx, thighLength, shinLength, shankTubeHeight, kneeAngleRad, exoThighAngleRad);
+        drawStraps(currentCtx, thighLength, shinLength, kneeAngleRad, exoThighAngleRad, deform);
+        drawRopeAndForces(currentCtx, thighLength, shankTubeHeight, kneeAngleRad, exoThighAngleRad, deform);
+        drawCapsAndJoints(currentCtx, thighLength, shinLength, shankTubeHeight, kneeAngleRad, exoThighAngleRad);
+        drawDynamicForces(currentCtx, thighLength, shinLength, kneeAngleRad, exoThighAngleRad, deform);
+        drawDriftIndicator(currentCtx, deform);
+
+        currentCtx.restore();
+    }
+
+    // --- DRAWING FUNCTIONS ---
+    function drawLeg(currentCtx, thighL, shinL, kneeAngleRad, deform) {
+        currentCtx.save();
+        currentCtx.strokeStyle = '#4A90E2'; 
+        currentCtx.lineWidth = 2.5;
+        currentCtx.fillStyle = 'rgba(74, 144, 226, 0.06)';
+
+        // Flesh center of rotation shift
+        const hKneeX = deform * 7; 
+        const hKneeY = deform * 4; 
+
+        const sin = Math.sin(kneeAngleRad);
+        const cos = Math.cos(kneeAngleRad);
+        const t = (x, y) => ({
+            x: hKneeX + x * cos - y * sin,
+            y: hKneeY + x * sin + y * cos
+        });
+
+        const squishFront = deform * 24;
+        const squishBack = deform * 25;
+        const squishCalf = deform * 18;
+
+        // Single continuous path for the entire leg outline
+        currentCtx.beginPath();
+        
+        // 1. Hip Front
+        currentCtx.moveTo(hKneeX + 60, hKneeY - thighL * 0.9);
+
+        // 2. Thigh Front (Quad) squishing inwards
+        currentCtx.bezierCurveTo(
+            hKneeX + 90 - squishFront, hKneeY - thighL * 0.6, 
+            hKneeX + 45 - squishFront * 0.4, hKneeY - thighL * 0.2, 
+            hKneeX + 38, hKneeY + 5 // knee cap start
+        );
+
+        // 3. Knee Cap to Shin Front
+        const shinFrontTop = t(38, 15);
+        const ankleFront = t(25, shinL - 10);
+        currentCtx.quadraticCurveTo(hKneeX + 45, hKneeY + 25, shinFrontTop.x, shinFrontTop.y);
+        currentCtx.lineTo(ankleFront.x, ankleFront.y); // mostly straight tibia
+
+        // 4. Foot Instep
+        const instep = t(50, shinL + 5);
+        const toeTop = t(90, shinL + 25);
+        currentCtx.bezierCurveTo(t(35, shinL - 5).x, t(35, shinL - 5).y, instep.x, instep.y, toeTop.x, toeTop.y);
+        
+        // 5. Toe Tip
+        const toeTip = t(95, shinL + 45);
+        currentCtx.quadraticCurveTo(t(100, shinL + 35).x, t(100, shinL + 35).y, toeTip.x, toeTip.y);
+        
+        // 6. Ball of foot to Arch
+        const ball = t(60, shinL + 60);
+        const arch = t(20, shinL + 50);
+        currentCtx.bezierCurveTo(t(80, shinL + 55).x, t(80, shinL + 55).y, ball.x, ball.y, arch.x, arch.y);
+
+        // 7. Rounded Heel Bottom to Heel Back
+        const heelBottom = t(-25, shinL + 55);
+        const heelBack = t(-45, shinL + 30);
+        currentCtx.bezierCurveTo(t(5, shinL + 45).x, t(5, shinL + 45).y, t(-10, shinL + 55).x, t(-10, shinL + 55).y, heelBottom.x, heelBottom.y);
+        currentCtx.quadraticCurveTo(t(-40, shinL + 55).x, t(-40, shinL + 55).y, heelBack.x, heelBack.y);
+
+        // 8. Heel to Ankle Back
+        const ankleBack = t(-20, shinL - 25);
+        currentCtx.quadraticCurveTo(t(-45, shinL + 5).x, t(-45, shinL + 5).y, ankleBack.x, ankleBack.y);
+
+        // 9. Calf (Shin Back) squishing inwards
+        const calfMid = t(-90 + squishCalf, shinL * 0.35);
+        
+        // CALCULATE A SHARED CREASE POINT TO PREVENT STROKE OVERLAPPING
+        const crease = { x: hKneeX - 35 + deform * 5, y: hKneeY - 35 }; 
+        currentCtx.bezierCurveTo(ankleBack.x, ankleBack.y, calfMid.x, calfMid.y, crease.x, crease.y);
+
+        // 10. (Removed interior crossing overlap line)
+        
+        // 11. Thigh Back (Hamstring) squishing inwards, connecting smoothly from the crease
+        currentCtx.bezierCurveTo(
+            crease.x - 5, crease.y - 20,
+            hKneeX - 105 + squishBack * 0.8, hKneeY - thighL * 0.6,
+            hKneeX - 60, hKneeY - thighL * 0.9
+        );
+        
+        // 12. Close outline at Hip
+        currentCtx.quadraticCurveTo(hKneeX, hKneeY - thighL * 1.05, hKneeX + 60, hKneeY - thighL * 0.9);
+
+        // A single fill means no transparent overlaps, creating a beautiful solid leg shape!
+        currentCtx.fill();
+        currentCtx.stroke();
+        currentCtx.restore();
+    }
+
+    function drawTubes(currentCtx, thighL, shinL, shinUpperL, kneeAngleRad, exoThighAngleRad) {
+        const tubeWidth = 24;
+        const tubeColor = '#151515';
+
+        currentCtx.save();
+        currentCtx.rotate(exoThighAngleRad);
+        currentCtx.fillStyle = tubeColor;
+        currentCtx.fillRect(-tubeWidth / 2, -thighL, tubeWidth, thighL);
+        currentCtx.restore();
+
+        currentCtx.save();
+        currentCtx.rotate(kneeAngleRad);
+        currentCtx.fillStyle = tubeColor;
+        currentCtx.fillRect(-tubeWidth / 2, 0, tubeWidth, shinL);
+        currentCtx.fillRect(-tubeWidth / 2, -shinUpperL, tubeWidth, shinUpperL);
+        currentCtx.restore();
+    }
+
+    function drawStraps(currentCtx, thighL, shinL, kneeAngleRad, exoThighAngleRad, deform) {
+        currentCtx.save();
+        currentCtx.strokeStyle = '#888';
+        currentCtx.lineWidth = 3;
+
+        const getThighPt = (x, y) => ({
+            x: x * Math.cos(exoThighAngleRad) - y * Math.sin(exoThighAngleRad),
+            y: x * Math.sin(exoThighAngleRad) + y * Math.cos(exoThighAngleRad)
+        });
+        const getShinPt = (x, y) => ({
+            x: x * Math.cos(kneeAngleRad) - y * Math.sin(kneeAngleRad),
+            y: x * Math.sin(kneeAngleRad) + y * Math.cos(kneeAngleRad)
+        });
+
+        const hKneeX = deform * 7; 
+        const hKneeY = deform * 4; 
+        const t = (x, y) => ({
+            x: hKneeX + x * Math.cos(kneeAngleRad) - y * Math.sin(kneeAngleRad),
+            y: hKneeY + x * Math.sin(kneeAngleRad) + y * Math.cos(kneeAngleRad)
+        });
+
+        const squishFront = deform * 24;
+        const squishBack = deform * 22;
+        const squishCalf = deform * 25;
+
+        const drawCurve = (p1, p2, curveOffset) => {
+            currentCtx.beginPath();
+            currentCtx.moveTo(p1.x, p1.y);
+            currentCtx.quadraticCurveTo((p1.x+p2.x)/2 + curveOffset.x, (p1.y+p2.y)/2 + curveOffset.y, p2.x, p2.y);
+            currentCtx.stroke();
+        };
+
+        // 1. Top Thigh Strap
+        let t1 = getThighPt(12, -thighL * 0.2);
+        let f1 = { x: hKneeX + 62 - squishFront * 0.65, y: hKneeY - thighL * 0.4 };
+        drawCurve(t1, f1, {x: 0, y: 15});
+
+        // 2. Bottom Thigh Strap
+        let t2 = getThighPt(-12, -thighL * 0.7);
+        let f2 = { x: hKneeX - 70 + squishBack * 0.4, y: hKneeY - thighL * 0.5 };
+        drawCurve(t2, f2, {x: -10, y: -5});
+
+        // 3. Top Shin Strap (Front)
+        let t3 = getShinPt(12, shinL * 0.25);
+        let f3 = t(35, shinL * 0.4);
+        drawCurve(t3, f3, {x: 5, y: -5});
+
+        // 4. Bottom Shin Strap (Back Calf)
+        let t4 = getShinPt(-12, shinL * 0.75);
+        let f4 = t(-54 + squishCalf * 0.4, shinL * 0.5);
+        drawCurve(t4, f4, {x: -5, y: -5});
+
+        currentCtx.restore();
+    }
+
+    function drawCapsAndJoints(currentCtx, thighL, shinL, shinUpperL, kneeAngleRad, exoThighAngleRad) {
+        const jointSize = 36;
+        const motorSize = 70;
+        const jointColor = '#ffffff';
+
+        currentCtx.strokeStyle = '#000';
+        currentCtx.lineWidth = 2;
+
+        // --- Thigh Mounted Components ---
+        currentCtx.save();
+        currentCtx.rotate(exoThighAngleRad);
+        
+        currentCtx.fillStyle = jointColor;
+        currentCtx.strokeRect(-motorSize / 2, -thighL - motorSize/2, motorSize, motorSize);
+        currentCtx.fillRect(-motorSize / 2, -thighL - motorSize/2, motorSize, motorSize);
+        
+        currentCtx.fillStyle = '#999';
+        currentCtx.fillRect(12, -thighL + motorSize/2, 16, 20);
+        currentCtx.strokeRect(12, -thighL + motorSize/2, 16, 20);
+
+        currentCtx.save();
+        currentCtx.translate(0, -thighL);
+        currentCtx.rotate(-kneeAngleRad * 4); 
+        currentCtx.fillStyle = '#f7c368';
+        currentCtx.beginPath();
+        currentCtx.arc(0, 0, 20, 0, 2 * Math.PI);
+        currentCtx.fill();
+        currentCtx.stroke();
+        currentCtx.fillStyle = '#333';
+        currentCtx.beginPath();
+        currentCtx.arc(12, 0, 4, 0, 2 * Math.PI);
+        currentCtx.fill();
+        currentCtx.restore();
+        
+        currentCtx.restore(); // End thigh parts
+
+        // --- Shin Mounted Components ---
+        currentCtx.save();
+        currentCtx.rotate(kneeAngleRad); // Rotates entirely with the shank
+        
+        currentCtx.fillStyle = jointColor;
+
+        // Ankle block
+        currentCtx.strokeRect(-jointSize / 2, shinL, jointSize, jointSize);
+        currentCtx.fillRect(-jointSize / 2, shinL, jointSize, jointSize);
+
+        // Shin upper cap
+        currentCtx.beginPath();
+        currentCtx.moveTo(-jointSize / 2 + 4, -shinUpperL);
+        currentCtx.lineTo(-jointSize / 2 + 4, -shinUpperL - 35);
+        currentCtx.lineTo(jointSize / 2 - 4, -shinUpperL - 20);
+        currentCtx.lineTo(jointSize / 2 - 4, -shinUpperL);
+        currentCtx.closePath();
+        currentCtx.fill();
+        currentCtx.stroke();
+        
+        // Center Knee Hinge 
+        currentCtx.fillStyle = jointColor;
+        currentCtx.fillRect(-jointSize / 2, -jointSize / 2, jointSize, jointSize);
+        currentCtx.strokeRect(-jointSize / 2, -jointSize / 2, jointSize, jointSize);
+        
+        // Hinge Pin Dot
+        currentCtx.fillStyle = '#000';
+        currentCtx.beginPath();
+        currentCtx.arc(0, 0, 5, 0, 2 * Math.PI);
+        currentCtx.fill();
+
+        currentCtx.restore(); // End shin parts
+    }
+
+    function drawRopeAndForces(currentCtx, thighL, tubeH, kneeAngleRad, exoThighAngleRad, deform) {
+        const getThighPt = (x, y) => ({
+            x: x * Math.cos(exoThighAngleRad) - y * Math.sin(exoThighAngleRad),
+            y: x * Math.sin(exoThighAngleRad) + y * Math.cos(exoThighAngleRad)
+        });
+        const getShinPt = (x, y) => ({
+            x: x * Math.cos(kneeAngleRad) - y * Math.sin(kneeAngleRad),
+            y: x * Math.sin(kneeAngleRad) + y * Math.cos(kneeAngleRad)
+        });
+
+        // Parallel rope coords
+        const rTop1 = getThighPt(-4, -thighL * 0.5 - 15);
+        const rBot1 = getThighPt(-4, -thighL * 0.5 + 15);
+        
+        const rTop2 = getThighPt(10, -thighL * 0.5 - 15);
+        const rBot2 = getThighPt(10, -thighL * 0.5 + 15);
+        
+        const shinTip1 = getShinPt(-10, -tubeH - 5);
+        const shinTip2 = getShinPt(-10, -tubeH - 20);
+
+        const dashOffset = -kneeAngleRad * 80;
+
+        currentCtx.strokeStyle = '#f00';
+        currentCtx.lineWidth = 2;
+        
+        // --- Rope 1 (Dashed Back line) ---
+        currentCtx.setLineDash( [ 8, 4 ] );
+        currentCtx.lineDashOffset = dashOffset;
+        currentCtx.beginPath();
+        currentCtx.moveTo(getThighPt(-4, -thighL).x, getThighPt(-4, -thighL).y);
+        currentCtx.lineTo(rTop1.x, rTop1.y);
+        currentCtx.lineTo(rBot1.x, rBot1.y);
+        currentCtx.lineTo(shinTip1.x, shinTip1.y);
+        currentCtx.stroke();
+
+        // --- Rope 2 (Solid-ish Front line) ---
+        currentCtx.lineDashOffset = -dashOffset * 0.2;
+        currentCtx.beginPath();
+        currentCtx.moveTo(getThighPt(20, -thighL + 45).x, getThighPt(20, -thighL + 45).y);
+        currentCtx.lineTo(rTop2.x, rTop2.y);
+        currentCtx.lineTo(rBot2.x, rBot2.y);
+        currentCtx.lineTo(shinTip2.x, shinTip2.y);
+        currentCtx.stroke();
+        
+        currentCtx.setLineDash( [ ] ); 
+
+        // Draw Redirect Box
+        currentCtx.save();
+        currentCtx.rotate(exoThighAngleRad);
+        currentCtx.fillStyle = '#fff';
+        currentCtx.strokeStyle = '#000';
+        currentCtx.lineWidth = 2;
+        currentCtx.fillRect(-12, -thighL * 0.5 - 15, 24, 30);
+        currentCtx.strokeRect(-12, -thighL * 0.5 - 15, 24, 30);
+        currentCtx.restore();
+    }
+
+    function drawDynamicForces(currentCtx, thighL, shinL, kneeAngleRad, exoThighAngleRad, deform) {
+        if (deform < 0.05) return;
+        
+        currentCtx.save();
+        const alpha = Math.min(1, deform * 2);
+        const red = `rgba(231, 76, 60, ${alpha})`;
+        
+        const hKneeX = deform * 7; 
+        const hKneeY = deform * 4; 
+        const squishFront = deform * 24;
+        const squishBack = deform * 22;
+        const squishCalf = deform * 18;
+        
+        const t = (x, y) => ({
+            x: hKneeX + x * Math.cos(kneeAngleRad) - y * Math.sin(kneeAngleRad),
+            y: hKneeY + x * Math.sin(kneeAngleRad) + y * Math.cos(kneeAngleRad)
+        });
+
+        // 1. Upper Thigh Front 
+        let f1 = { x: hKneeX + 86 - squishFront, y: hKneeY - thighL * 0.4 };
+        drawStraightArrow(currentCtx, f1.x + 50, f1.y - 35, f1.x + 15, f1.y - 15, red);
+
+        // 2. Lower Thigh Back 
+        let f2 = { x: hKneeX - 58 + squishBack * 0.8, y: hKneeY - thighL * 0.6 };
+        drawStraightArrow(currentCtx, f2.x - 80, f2.y + 25, f2.x - 25, f2.y + 25, red);
+
+        // 3. Lower Shin Back
+        let f4 = t(-53 + squishCalf, shinL * 0.65);
+        let sx = Math.sin(-kneeAngleRad);
+        let sy = Math.cos(-kneeAngleRad);
+        drawStraightArrow(currentCtx, f4.x - sy * 40 + sx * 15, f4.y + sx * 40 + sy * 15, f4.x - sy * 5, f4.y + sx * 5, red);
+
+        // Interface forces label
+        currentCtx.fillStyle = `rgba(0,0,0,${alpha})`;
+        currentCtx.font = "14px Arial";
+        currentCtx.textAlign = "center";
+        currentCtx.save();
+        currentCtx.translate(f4.x - sy * 65 - sx * 10, f4.y + sx * 65 - sy * 10);
+        currentCtx.rotate(-baseRotationDeg * Math.PI/180);
+        currentCtx.fillText("Interface Forces", 0, 0);
+        currentCtx.restore();
+
+        currentCtx.restore();
+    }
+
+    // --- NEW: Center of Rotation Drift Visualizer ---
+    function drawDriftIndicator(currentCtx, deform) {
+        const hKneeX = deform * 7; 
+        const hKneeY = deform * 4; 
+        const driftDist = Math.sqrt(hKneeX * hKneeX + hKneeY * hKneeY);
+
+        if (driftDist < 0.5) return;
+
+        currentCtx.save();
+        
+        // 1. Draw dashed line between Exo center (0,0) and Flesh center (hKneeX, hKneeY)
+        currentCtx.strokeStyle = '#d93838';
+        currentCtx.lineWidth = 1.5;
+        currentCtx.setLineDash( [ 4, 3 ] );
+        currentCtx.beginPath();
+        currentCtx.moveTo(0, 0);
+        currentCtx.lineTo(hKneeX, hKneeY);
+        currentCtx.stroke();
+        currentCtx.setLineDash( [ ] );
+
+        // 2. Flesh Center Marker (Blue dot)
+        currentCtx.fillStyle = '#4A90E2';
+        currentCtx.beginPath();
+        currentCtx.arc(hKneeX, hKneeY, 6.5, 0, Math.PI * 2);
+        currentCtx.fill();
+        currentCtx.strokeStyle = '#ffffff';
+        currentCtx.lineWidth = 1.5;
+        currentCtx.stroke();
+
+        // 3. Distance Label
+        currentCtx.save();
+        currentCtx.translate(hKneeX + 12, hKneeY);
+        currentCtx.rotate(-baseRotationDeg * Math.PI / 180); // keep text horizontally aligned
+        currentCtx.fillStyle = '#d93838';
+        currentCtx.font = 'bold 12px Arial';
+        currentCtx.textAlign = 'left';
+        currentCtx.textBaseline = 'middle';
+        // currentCtx.fillText(`Drift: ${driftDist.toFixed(1)}px`, 0, 0);
+        currentCtx.restore();
+
+        currentCtx.restore();
+    }
+
+    function drawStraightArrow(currentCtx, x1, y1, x2, y2, color) {
+        currentCtx.strokeStyle = color;
+        currentCtx.fillStyle = color;
+        currentCtx.lineWidth = 3;
+
+        currentCtx.beginPath();
+        currentCtx.moveTo(x1, y1);
+        currentCtx.lineTo(x2, y2);
+        currentCtx.stroke();
+
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        const headlen = 12;
+        
+        currentCtx.beginPath();
+        currentCtx.moveTo(x2, y2);
+        currentCtx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+        currentCtx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+        currentCtx.closePath();
+        currentCtx.fill();
+    }
+
+    // --- SYNTHETIC EXPORT LOGIC FOR PERFECT LOOP ---
+    recordBtn.addEventListener("click", () => {
+        
+        recordBtn.disabled = true;
+        recordBtn.textContent = "Rendering Frames...";
+        recordBtn.classList.add("recording");
+
+        const gif = new GIF({
+            workers: 2,
+            quality: 10,
+            workerScript: gifWorkerUrl,
+            // transparent: 0xFEFEFE
+        });
+
+        gif.on('finished', function(blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = "leg-animation-loop.gif";
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+
+            recordBtn.textContent = "Export Looping GIF";
+            recordBtn.classList.remove("recording");
+            recordBtn.disabled = false;
+        });
+
+        const totalFrames = (LOOP_DURATION / 1000) * FPS;
+        const delay = 1000 / FPS;
+
+        // Generate each frame synthetically so we have perfectly evenly spaced captures.
+        // We stop at (totalFrames - 1) so the final frame seamlessly flows into the first frame at 0%
+        for (let i = 0; i < totalFrames; i++) {
+            const simulatedTimeMs = (i / totalFrames) * LOOP_DURATION;
+            const { kneeAngle, deform } = getSceneState(simulatedTimeMs);
+            
+            drawScene(offCtx, kneeAngle, deform);
+            gif.addFrame(offCanvas, { copy: true, delay: delay });
+        }
+
+        recordBtn.textContent = "Processing GIF...";
+        gif.render();
+    });
+
+    animate();
+
+</script>
+</body>
+</html>

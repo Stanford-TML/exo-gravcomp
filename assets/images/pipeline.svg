@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="stepBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.06"/>
+    </filter>
+    <marker id="arrowHead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#8C1515"/>
+    </marker>
+  </defs>
+
+  <!-- Step 1: AMASS Pose Initialization -->
+  <g transform="translate(10, 20)" filter="url(#cardShadow)">
+    <rect width="190" height="200" rx="12" fill="url(#stepBg)" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="14" y="14" width="28" height="28" rx="6" fill="#fecdd3" stroke="#8C1515" stroke-width="1"/>
+    <text x="23" y="33" fill="#8C1515" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="bold">1</text>
+    
+    <text x="50" y="32" fill="#0f172a" font-family="'Inter', sans-serif" font-size="13" font-weight="bold">Pose Seeding</text>
+    <text x="14" y="65" fill="#64748b" font-family="'Inter', sans-serif" font-size="11" font-weight="500">AMASS Motion Bank</text>
+    <text x="14" y="85" fill="#334155" font-family="'Inter', sans-serif" font-size="11.5">Farthest-point sampling extracts 100 diverse initial postures across kinematic state space.</text>
+    
+    <!-- Mini Graphic -->
+    <rect x="14" y="140" width="162" height="46" rx="6" fill="#f1f5f9"/>
+    <text x="24" y="167" fill="#475569" font-family="'JetBrains Mono', monospace" font-size="11">100 Target Poses</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="205" y1="120" x2="230" y2="120" stroke="#8C1515" stroke-width="2.5" marker-end="url(#arrowHead)"/>
+
+  <!-- Step 2: Admittance Clamping Yielding -->
+  <g transform="translate(235, 20)" filter="url(#cardShadow)">
+    <rect width="190" height="200" rx="12" fill="url(#stepBg)" stroke="#8C1515" stroke-width="2"/>
+    <rect x="14" y="14" width="28" height="28" rx="6" fill="#8C1515"/>
+    <text x="23" y="33" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="bold">2</text>
+    
+    <text x="50" y="32" fill="#8C1515" font-family="'Inter', sans-serif" font-size="13" font-weight="bold">Passive Yielding</text>
+    <text x="14" y="65" fill="#64748b" font-family="'Inter', sans-serif" font-size="11" font-weight="500">Admittance Ceiling</text>
+    <text x="14" y="85" fill="#334155" font-family="'Inter', sans-serif" font-size="11.5">Motor clamps descent to 0.125 rad/s. Inertia &amp; reflexes drop to zero without dynamic noise.</text>
+    
+    <!-- Mini Graphic -->
+    <rect x="14" y="140" width="162" height="46" rx="6" fill="#fef2f2" stroke="#fecdd3"/>
+    <text x="24" y="167" fill="#991b1b" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="bold">q̇ ≤ 0.125 rad/s</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="430" y1="120" x2="455" y2="120" stroke="#8C1515" stroke-width="2.5" marker-end="url(#arrowHead)"/>
+
+  <!-- Step 3: Empirical Label Harvesting -->
+  <g transform="translate(460, 20)" filter="url(#cardShadow)">
+    <rect width="190" height="200" rx="12" fill="url(#stepBg)" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="14" y="14" width="28" height="28" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+    <text x="23" y="33" fill="#b45309" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="bold">3</text>
+    
+    <text x="50" y="32" fill="#0f172a" font-family="'Inter', sans-serif" font-size="13" font-weight="bold">Data Harvesting</text>
+    <text x="14" y="65" fill="#64748b" font-family="'Inter', sans-serif" font-size="11" font-weight="500">Hardware as Sensor</text>
+    <text x="14" y="85" fill="#334155" font-family="'Inter', sans-serif" font-size="11.5">Continuous trajectory records actual tension required to hold user. Zero contamination.</text>
+    
+    <!-- Mini Graphic -->
+    <rect x="14" y="140" width="162" height="46" rx="6" fill="#fffbeb"/>
+    <text x="24" y="167" fill="#92400e" font-family="'JetBrains Mono', monospace" font-size="11">F_winch ~ (g - τ_p)/R</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="655" y1="120" x2="680" y2="120" stroke="#8C1515" stroke-width="2.5" marker-end="url(#arrowHead)"/>
+
+  <!-- Step 4: Policy & 60s Personalization -->
+  <g transform="translate(685, 20)" filter="url(#cardShadow)">
+    <rect width="205" height="200" rx="12" fill="url(#stepBg)" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="14" y="14" width="28" height="28" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+    <text x="23" y="33" fill="#15803d" font-family="'JetBrains Mono', monospace" font-size="13" font-weight="bold">4</text>
+    
+    <text x="50" y="32" fill="#0f172a" font-family="'Inter', sans-serif" font-size="13" font-weight="bold">MLP &amp; 60s Calibration</text>
+    <text x="14" y="65" fill="#64748b" font-family="'Inter', sans-serif" font-size="11" font-weight="500">>500 Hz Real-Time Control</text>
+    <text x="14" y="85" fill="#334155" font-family="'Inter', sans-serif" font-size="11.5">16D state maps to 32 torque bins. 3 slow squats personalize tissue elasticity residual.</text>
+    
+    <!-- Mini Graphic -->
+    <rect x="14" y="140" width="177" height="46" rx="6" fill="#f0fdf4"/>
+    <text x="24" y="167" fill="#166534" font-family="'JetBrains Mono', monospace" font-size="11">3 Squats = Personalized</text>
+  </g>
+</svg>
